@@ -1,4 +1,4 @@
-
+import os
 import numpy as np
 import math
 
@@ -175,8 +175,9 @@ def inicio():
 	n=1
 	while n<=maxord:
 		n=n+1
-	file='WMM.COF'
-	f = open(file,'r')
+	file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'WMM.COF')
+
+	f = open(file_path,'r')
 	for x in f:
 		aux = x.split(' ')
 		i=0
