@@ -1,8 +1,6 @@
 
 import numpy as np
 import math
-#import datetime
-import pprint
 
 #Geodetic altitude in km
 alt = 0
@@ -37,21 +35,6 @@ defaultDate = 2020.0
 defaultAltitude = 0
 
 #--------------------------------
-#Vaso de matriz 13x13
-'''vaso=[	[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0,0,0,0,0,0]	]
-'''
 #Default coeficients of main magnetic model (nT)
 c=[	[0,0,0,0,0,0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -196,17 +179,13 @@ def inicio():
 	f = open(file,'r')
 	for x in f:
 		aux = x.split(' ')
-		#print(aux)
 		i=0
 		length = len(aux)
 		aux1=[]	
 		for y in aux:
 			if y!='':
 				aux1.append(y)
-		#print('---------------------')
-		#print(aux1)
-		#print(type(aux1[0]))
-		#print("El largo es:"+str(len(aux1)))
+
 		if len(aux1)==1:
 			break
 			pass
@@ -217,53 +196,23 @@ def inicio():
 				defaultDate = epoch+2.5
 				pass
 			else:
-				#print("Paso la primera linea")
 				n = int(aux1[0])
 				m = int(aux1[1])
 				gnm = float(aux1[2])
 				hnm = float(aux1[3])
 				dgnm = float(aux1[4])
 				dhnm = float(aux1[5])
-				'''print("El valor de n: " + str(n))
-				print("El valor de m: " + str(m))
-				print("El valor de gnm: " + str(gnm))
-				print("El valor de dgnm: " + str(dgnm))
-				print("El valor de hnm: " + str(hnm))
-				print("El valor de dhnm: " + str(dhnm))'''
-				#input("Press Enter to continue...")
+
 				if m<=n:
 					c[m][n] = gnm
 					cd[m][n] = dgnm
 					if m!=0:
 						c[n][m-1]=hnm
 						cd[n][m-1]=dhnm
-	#print("La epoca es:"+str(epoch))
-	#ppr = pprint.PrettyPrinter(indent = 4)
-	'''
-	print("La matriz es c:")
-	#ppr.pprint(c)
-	print("[",end="")
-	for x in range(0,13,1):
-		for y in range(0,13,1):
-			print(str(c[x][y])+" ",end="")
-		print("\n")
-		pass
-	print("]")
 
-	print("La matriz es cd:")
-	#ppr.pprint(cd)
-	print("[",end="")
-	for x in range(0,13,1):
-		for y in range(0,13,1):
-			print(str(cd[x][y])+" ",end="")
-		print("\n")
-		pass
-	print("]")'''
 
 	f.close()
 	
-	"""if (cd == c):
-		print("LAS MATRICES SON IGUALES")"""
 	#Convert Schmidt normalized gauss Coefficientes to unnormalized
 	snorm[0] = 1.0
 	#for n in range(1,n<=maxord,1):
@@ -298,8 +247,6 @@ def inicio():
 	otime = oalt = olat = olon = -1000.0
 	
 	pass
-	'''for x in snorm:
-		print(x)'''
 
 inicio()
 
@@ -317,7 +264,6 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	time = year
 	#Calc
 	dt = time-epoch
-	#print("El dt es:"+str(dt))
 	#Ctte
 	pi = math.pi
 	dtr = pi / 180.0
@@ -329,7 +275,6 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	crlat = math.cos(rlat)
 	srlat2 = srlat * srlat
 	crlat2 = crlat * crlat
-	#print("flag 1 : "+ str(srlon))
 	sp[1] = srlon
 	cp[1] = crlon
 	#Conversion Geodetic Coord TO Spherical Coord
@@ -360,18 +305,15 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	bt = 0 
 	bp = 0 
 	bpp = 0
-	#print("El valor de n = "+ str(n))
 	n = 1
 	while(n<=maxord):
-		#for n in range(1, n<=maxord ,1):
 		ar = ar * aor
 		m=0
 		D3 = 1
 		D4 = (n + m + D3) / D3
-		#Translate for (int m = 0,D3 = 1,D4 = (n + m + D3) / D3; D4 > 0; D4--,m += D3) TO while
+		# Translate for (int m = 0,D3 = 1,D4 = (n + m + D3) / D3; D4 > 0; D4--,m += D3) TO while
 		while D4 > 0:
-			#COMPUTE UNNORMALIZED ASSOCIATED LEGENDRE POLYNOMIALS
-			#AND DERIVATIVES VIA RECURSION RELATIONS
+			# COMPUTE UNNORMALIZED ASSOCIATED LEGENDRE POLYNOMIALS AND DERIVATIVES VIA RECURSION RELATIONS
 			if alt != oalt or glat != olat:
 				if(n == m):
 					snorm[n + m * 13] = st * snorm[n - 1 + (m - 1) * 13]
@@ -393,14 +335,14 @@ def calcGeoMag(fLat,fLon,year,altitude):
 			pass
 			
 
-			#TIME ADJUST THE GAUSS COEFFICIENTS
+			# TIME ADJUST THE GAUSS COEFFICIENTS
 			if time != otime:
 				tc[m][n] = c[m][n] + dt * cd[m][n]
 				if (m != 0):
 					tc[n][m - 1] = c[n][m - 1]+ dt * cd[n][m - 1]
 					pass
 				pass
-			#ACCUMULATE TERMS OF THE SPHERICAL HARMONIC EXPANSIONS
+			# ACCUMULATE TERMS OF THE SPHERICAL HARMONIC EXPANSIONS
 			temp1, temp2 = 0,0
 			par = ar * snorm[ n + m * 13]
 			
@@ -437,11 +379,11 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	pass
 
 	'''
-	//ROTATE MAGNETIC VECTOR COMPONENTS FROM SPHERICAL TO
-	//GEODETIC COORDINATES
-	// by is the east-west field component
-	// bx is the north-south field component
-	// bz is the vertical field component.
+	ROTATE MAGNETIC VECTOR COMPONENTS FROM SPHERICAL TO
+	GEODETIC COORDINATES
+	by is the east-west field component
+	bx is the north-south field component
+	bz is the vertical field component.
 	'''
 
 	bx = -bt * ca - br * sa
@@ -459,48 +401,39 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	oalt = alt
 	olat = glat
 	olon = glon
-	#print("La declinacion es: " + str(ar))
+
 
 def getDeclination(dLat,dLong,year,altitude):
 	global dec
 	calcGeoMag(dLat,dLong,year,altitude)
 	return dec
 
+
 def getIntensity(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return ti
+
 
 def getHorizontalIntensity(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return bh
 
+
 def getVerticalIntensity(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return bz
+
 
 def getNorthIntensity(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return bx
 
+
 def getEastIntensity(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return by
 
+
 def getDipAngle(dLat,dLong,year,altitude):
 	calcGeoMag(dLat,dLong,year,altitude)
 	return dip
-
-#No need for setCoeff
-#Año mes dia = Gegrorian Calendar
-'''
-def decimalYear(fecha):
-	date_object = datetime.strptime(fecha, '%Y-%m-%d').date()
-	daysInYear = 0
-	if (calendar.isleap(date_object.year)):
-		daysInYear=366
-	else:
-		daysInYear=365
-	return date_object.year+(date_object.timetuple().tm_yday/daysInYear)#Date to day of year
-'''
-#print(decimalYear("2020-07-15"))
-#print(ft2km(3200))
