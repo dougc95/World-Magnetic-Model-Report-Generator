@@ -1,16 +1,20 @@
-class WMMModel:
-    def __init__(self, latitude, longitude, altitude, year):
-        self.latitude = latitude
-        self.longitude = longitude
-        self.altitude = altitude
-        self.year = year
-        self.dec = None
-        self.dip = None
-        self.ti = None
-        self.bh = None
-        self.bx = None
-        self.by = None
-        self.bz = None
+from pydantic import BaseModel, Field, field_validator
+
+class WMMModel(BaseModel):
+    latitude: float
+    longitude: float
+    altitude: float
+    year: float
+    dec: float = None
+    dip: float = None
+    ti: float = None
+    bh: float = None
+    bx: float = None
+    by: float = None
+    bz: float = None
+
+    class Config:
+        allow_mutation = True
 
     def __str__(self):
         return f"WMMModel(latitude={self.latitude}, longitude={self.longitude}, altitude={self.altitude}, year={self.year})"
@@ -18,14 +22,11 @@ class WMMModel:
     def __repr__(self):
         return self.__str__()
 
-    def set_results(self, dec, dip, ti, bh, bx, by, bz):
-        self.dec = dec
-        self.dip = dip
-        self.ti = ti
-        self.bh = bh
-        self.bx = bx
-        self.by = by
-        self.bz = bz
+    @field_validator('dec', 'dip', 'ti', 'bh', 'bx', 'by', 'bz', mode='before', always=True)
+    def set_results(cls, v, field):
+        if v is None:
+            return getattr(cls, field.name, None)
+        return v
 
     def get_results(self):
         return {
