@@ -41,7 +41,7 @@ class WMMModel(BaseModel):
     def __repr__(self):
         return self.__str__()
 
-    def get_results(self):
+    def get_results(self) -> dict:
         """
         Get the computed magnetic field results.
 
@@ -57,3 +57,24 @@ class WMMModel(BaseModel):
             "by": self.by,
             "bz": self.bz
         }
+
+    def set_results(self, dec: float, dip: float, ti: float, bh: float, bx: float, by: float, bz: float) -> None:
+        """
+        Set the computed magnetic field results.
+
+        Args:
+            dec (float): Computed magnetic declination in degrees.
+            dip (float): Computed magnetic inclination in degrees.
+            ti (float): Computed total intensity of the magnetic field in nanoteslas.
+            bh (float): Computed horizontal intensity of the magnetic field in nanoteslas.
+            bx (float): Computed north component of the magnetic field in nanoteslas.
+            by (float): Computed east component of the magnetic field in nanoteslas.
+            bz (float): Computed vertical component of the magnetic field in nanoteslas.
+        """
+        self.dec = dec
+        self.dip = dip
+        self.ti = ti
+        self.bh = bh
+        self.bx = bx
+        self.by = by
+        self.bz = bz

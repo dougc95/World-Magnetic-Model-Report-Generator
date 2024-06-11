@@ -16,7 +16,11 @@ class WMMCalculator:
     @staticmethod
     def calculate_next_year(model: WMMModel):
         next_year = model.year + 1
-        next_model = WMMModel(model.latitude, model.longitude, model.altitude, next_year)
+        next_model = WMMModel(latitude=model.latitude,
+                              longitude=model.longitude,
+                              altitude=model.altitude,
+                              year=next_year)
+
         WMMCalculator.calculate(next_model)
         return next_model
 

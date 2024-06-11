@@ -1,3 +1,4 @@
+from datetime import datetime
 import wx
 import wx.adv
 from src.models.wmm_model import WMMModel
@@ -17,11 +18,12 @@ class WMMGui(wx.Frame):
         self.txt_lat = wx.TextCtrl(panel, pos=(80, 55))
         self.txt_lon = wx.TextCtrl(panel, pos=(80, 130))
         self.txt_alt = wx.TextCtrl(panel, pos=(80, 210))
-        self.txt_start_date = wx.adv.DatePickerCtrl(panel, pos=(220, 40), style=wx.adv.DP_DROPDOWN)
-        self.txt_end_date = wx.adv.DatePickerCtrl(panel, pos=(500, 40), style=wx.adv.DP_DROPDOWN)
         self.txt_step_days = wx.TextCtrl(panel, pos=(290, 210), size=(50, 25))
         self.txt_output_file = wx.TextCtrl(panel, pos=(585, 210))
-
+        #Calendar
+        self.txt_start_date = wx.adv.DatePickerCtrl(panel, pos=(220, 40), style=wx.adv.DP_DROPDOWN)
+        self.txt_end_date = wx.adv.DatePickerCtrl(panel, pos=(500, 40), style=wx.adv.DP_DROPDOWN)
+        #Buttons
         btn_generate = wx.Button(panel, label="Generate", pos=(435, 200), size=(75, 50))
         btn_generate.Bind(wx.EVT_BUTTON, self.on_generate)
 
@@ -39,7 +41,7 @@ class WMMGui(wx.Frame):
         self.rb_south = wx.RadioButton(panel, label="South", pos=(50, 30))
         self.rb_east = wx.RadioButton(panel, label="East", pos=(50, 90), style=wx.RB_GROUP)
         self.rb_west = wx.RadioButton(panel, label="West", pos=(50, 110))
-        self.rb_km = wx.RadioButton(panel, label="KM", pos=(50, 165), style=wx.RB_GROUP)
+        self.rb_km = wx.RadioButton(panel, label="Meters", pos=(50, 165), style=wx.RB_GROUP)
         self.rb_ft = wx.RadioButton(panel, label="Feet", pos=(50, 185))
 
         self.Center()
@@ -64,7 +66,7 @@ class WMMGui(wx.Frame):
 
         # Adjust altitude based on radio button selection
         if self.rb_ft.GetValue():
-            alt = alt * 0.3048  # Convert feet to kilometers
+            alt = alt * 0.3048780487804878 /1000  # Convert feet to meters
 
         # Generate date range
         dates = DateUtils.date_range(start_date, end_date, step_days)
@@ -75,7 +77,13 @@ class WMMGui(wx.Frame):
 
         # Perform calculations and add data to Excel
         for date in dates:
-            model = WMMModel(lat, lon, alt, date)
+            date_object = datetime.strptime(date, "%Y-%m-%d")
+            year = date_object.year
+            model = WMMModel(latitude=lat,
+                             longitude=lon,
+                             altitude=alt,
+                             year=year)
+
             WMMCalculator.calculate(model)
             next_model = WMMCalculator.calculate_next_year(model)
             variation = WMMCalculator.calculate_variation(model, next_model)
