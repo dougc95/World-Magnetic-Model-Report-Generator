@@ -2,4 +2,5 @@ deprecrated
 __pycache__
 myenv
 .vscode
-
+.venv
+poetry.lock
