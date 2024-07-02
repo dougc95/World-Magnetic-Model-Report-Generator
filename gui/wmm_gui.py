@@ -1,6 +1,6 @@
 from datetime import datetime
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                             QLineEdit, QPushButton, QRadioButton, QMessageBox, QDateEdit)
+                             QLineEdit, QPushButton, QRadioButton, QMessageBox, QDateEdit, QButtonGroup)
 from PyQt6.QtCore import QDate
 from src.models.wmm_model import WMMModel
 from src.services.wmm_calculator import WMMCalculator
@@ -36,6 +36,11 @@ class WMMGui(QMainWindow):
         btn_generate = QPushButton("Generate")
         btn_generate.clicked.connect(self.on_generate)
 
+        # Create radio buttons groups
+        self.lat_group = QButtonGroup(self)
+        self.lon_group  = QButtonGroup(self)
+        self.alt_group = QButtonGroup(self)
+
         # Add radio buttons
         self.rb_north = QRadioButton("North")
         self.rb_south = QRadioButton("South")
@@ -43,6 +48,14 @@ class WMMGui(QMainWindow):
         self.rb_west = QRadioButton("West")
         self.rb_km = QRadioButton("Meters")
         self.rb_ft = QRadioButton("Feet")
+
+        # Add radio buttons to groups
+        self.lat_group.addButton(self.rb_north)
+        self.lat_group.addButton(self.rb_south)
+        self.lon_group.addButton(self.rb_east)
+        self.lon_group.addButton(self.rb_west)
+        self.alt_group.addButton(self.rb_km)
+        self.alt_group.addButton(self.rb_ft)
 
         self.rb_north.setChecked(True)
         self.rb_east.setChecked(True)
