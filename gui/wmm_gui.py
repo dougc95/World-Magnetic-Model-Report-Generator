@@ -135,12 +135,10 @@ class WMMGui(QMainWindow):
 
             # Perform calculations and add data to Excel
             for date in dates:
-                date_object = datetime.strptime(date, "%Y-%m-%d")
-                year = date_object.year
                 model = WMMModel(latitude=lat,
-                                 longitude=lon,
-                                 altitude=alt,
-                                 year=year)
+                                longitude=lon,
+                                altitude=alt,
+                                year=date)
 
                 WMMCalculator.calculate(model)
                 next_model = WMMCalculator.calculate_next_year(model)
