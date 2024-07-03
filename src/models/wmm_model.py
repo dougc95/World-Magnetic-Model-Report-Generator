@@ -11,7 +11,7 @@ class WMMModel(BaseModel):
         latitude (float): Latitude in decimal degrees.
         longitude (float): Longitude in decimal degrees.
         altitude (float): Altitude above the WGS84 ellipsoid in kilometers.
-        year (float): Decimal year for the desired magnetic field values.
+        year (string): Year for the desired magnetic field values.
         dec (Optional[float]): Computed magnetic declination in degrees. Defaults to None.
         dip (Optional[float]): Computed magnetic inclination in degrees. Defaults to None.
         ti (Optional[float]): Computed total intensity of the magnetic field in nanoteslas. Defaults to None.
@@ -23,7 +23,7 @@ class WMMModel(BaseModel):
     latitude: float = Field(..., description="Latitude in decimal degrees.")
     longitude: float = Field(..., description="Longitude in decimal degrees.")
     altitude: float = Field(..., description="Altitude above the WGS84 ellipsoid in kilometers.")
-    year: float = Field(..., description="Decimal year for the desired magnetic field values.")
+    year: str = Field(..., description="Year for the desired magnetic field values.")
     dec: Optional[float] = Field(None, description="Computed magnetic declination in degrees.")
     dip: Optional[float] = Field(None, description="Computed magnetic inclination in degrees.")
     ti: Optional[float] = Field(None, description="Computed total intensity of the magnetic field in nanoteslas.")
