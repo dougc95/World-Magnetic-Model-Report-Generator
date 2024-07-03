@@ -1,6 +1,7 @@
 import openpyxl
 from src.models.wmm_model import WMMModel
 
+
 class ExcelGenerator:
     def __init__(self, file_path: str):
         self.file_path = file_path
@@ -26,7 +27,7 @@ class ExcelGenerator:
             "Δ East",
             "Δ Vertical",
             "Δ Declination",
-            "Δ Inclination"
+            "Δ Inclination",
         ]
         for col_index, header in enumerate(headers, start=1):
             self.sheet.cell(row=self.row_index, column=col_index, value=header)
@@ -49,7 +50,7 @@ class ExcelGenerator:
             variation["by"],
             variation["bz"],
             variation["dec"],
-            variation["dip"]
+            variation["dip"],
         ]
         for col_index, value in enumerate(data, start=1):
             self.sheet.cell(row=self.row_index, column=col_index, value=value)

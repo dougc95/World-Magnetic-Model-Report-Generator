@@ -1,12 +1,13 @@
 import calendar
 from datetime import datetime, timedelta
 
+
 class DateUtils:
     @staticmethod
     def date_range(start_date: str, end_date: str, step_days: int):
         try:
-            start = datetime.strptime(start_date, '%Y-%m-%d')
-            end = datetime.strptime(end_date, '%Y-%m-%d')
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            end = datetime.strptime(end_date, "%Y-%m-%d")
         except ValueError as e:
             raise ValueError(f"Invalid date format: {e}")
 
@@ -17,14 +18,14 @@ class DateUtils:
         dates = []
         current_date = start
         while current_date <= end:
-            dates.append(current_date.strftime('%Y-%m-%d'))
+            dates.append(current_date.strftime("%Y-%m-%d"))
             current_date += step
         return dates
-    
+
     @staticmethod
     def decimal_year(date_str: str) -> float:
         try:
-            date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
+            date_object = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError as e:
             raise ValueError(f"Invalid date format: {e}")
 

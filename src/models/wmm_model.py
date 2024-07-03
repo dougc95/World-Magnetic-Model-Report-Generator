@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
+
 class WMMModel(BaseModel):
     """
     World Magnetic Model (WMM) data class.
@@ -20,17 +21,38 @@ class WMMModel(BaseModel):
         by (Optional[float]): Computed east component of the magnetic field in nanoteslas. Defaults to None.
         bz (Optional[float]): Computed vertical component of the magnetic field in nanoteslas. Defaults to None.
     """
+
     latitude: float = Field(..., description="Latitude in decimal degrees.")
     longitude: float = Field(..., description="Longitude in decimal degrees.")
-    altitude: float = Field(..., description="Altitude above the WGS84 ellipsoid in kilometers.")
+    altitude: float = Field(
+        ..., description="Altitude above the WGS84 ellipsoid in kilometers."
+    )
     year: str = Field(..., description="Year for the desired magnetic field values.")
-    dec: Optional[float] = Field(None, description="Computed magnetic declination in degrees.")
-    dip: Optional[float] = Field(None, description="Computed magnetic inclination in degrees.")
-    ti: Optional[float] = Field(None, description="Computed total intensity of the magnetic field in nanoteslas.")
-    bh: Optional[float] = Field(None, description="Computed horizontal intensity of the magnetic field in nanoteslas.")
-    bx: Optional[float] = Field(None, description="Computed north component of the magnetic field in nanoteslas.")
-    by: Optional[float] = Field(None, description="Computed east component of the magnetic field in nanoteslas.")
-    bz: Optional[float] = Field(None, description="Computed vertical component of the magnetic field in nanoteslas.")
+    dec: Optional[float] = Field(
+        None, description="Computed magnetic declination in degrees."
+    )
+    dip: Optional[float] = Field(
+        None, description="Computed magnetic inclination in degrees."
+    )
+    ti: Optional[float] = Field(
+        None,
+        description="Computed total intensity of the magnetic field in nanoteslas.",
+    )
+    bh: Optional[float] = Field(
+        None,
+        description="Computed horizontal intensity of the magnetic field in nanoteslas.",
+    )
+    bx: Optional[float] = Field(
+        None,
+        description="Computed north component of the magnetic field in nanoteslas.",
+    )
+    by: Optional[float] = Field(
+        None, description="Computed east component of the magnetic field in nanoteslas."
+    )
+    bz: Optional[float] = Field(
+        None,
+        description="Computed vertical component of the magnetic field in nanoteslas.",
+    )
 
     def __str__(self):
         return f"WMMModel(latitude={self.latitude}, longitude={self.longitude}, altitude={self.altitude}, year={self.year})"
@@ -52,10 +74,19 @@ class WMMModel(BaseModel):
             "bh": self.bh,
             "bx": self.bx,
             "by": self.by,
-            "bz": self.bz
+            "bz": self.bz,
         }
 
-    def set_results(self, dec: float, dip: float, ti: float, bh: float, bx: float, by: float, bz: float) -> None:
+    def set_results(
+        self,
+        dec: float,
+        dip: float,
+        ti: float,
+        bh: float,
+        bx: float,
+        by: float,
+        bz: float,
+    ) -> None:
         """
         Set the computed magnetic field results.
 
