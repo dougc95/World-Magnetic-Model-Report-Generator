@@ -249,116 +249,9 @@ def start():
 
     pass
 
-def inicio():
-	global otime,oalt,olat,olon 
-	global c,cd,tc,dp,snorm,sp,cp,fn,fm,pp,k
-	global glat
-	global glon
-	global maxord
-	global dec,dip,ti
-	global bx,by,bz,bh
-	maxord=maxdeg
-	sp[0] = 0.0
-	cp[0] = snorm[0] = pp[0] = 1.0
-	dp[0][0] = 0
-	#Semi-major axis of WGS-84 ellipsoid, in km
-	global a
-	a = 6378.137
-	#Semi-minor axis of WGS-84 ellipsoid, in km.
-	global b
-	b = 6356.7523142
-	#Mean radius of IAU-66 ellipsoid, in km.
-	global re,a2,b2,c2,a4,b4,c4
-	global r,d,ca,sa,ct,st
-	re = 6371.2
-	a2 = a * a
-	b2 = b * b
-	c2 = a2 - b2
-	a4 = a2 * a2
-	b4 = b2 * b2
-	c4 = a4 - b4
-	#Lectura Archivo
-	snorm[0] = 1.0
-	n=1
-	while n<=maxord:
-		n=n+1
-	file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'WMM.COF')
-
-	f = open(file_path,'r')
-	for x in f:
-		aux = x.split(' ')
-		i=0
-		length = len(aux)
-		aux1=[]	
-		for y in aux:
-			if y!='':
-				aux1.append(y)
-
-		if len(aux1)==1:
-			break
-			pass
-		else:
-			if len(aux1)==3:
-				global epoch
-				epoch = float(aux1[0])
-				defaultDate = epoch+2.5
-				pass
-			else:
-				n = int(aux1[0])
-				m = int(aux1[1])
-				gnm = float(aux1[2])
-				hnm = float(aux1[3])
-				dgnm = float(aux1[4])
-				dhnm = float(aux1[5])
-
-				if m<=n:
-					c[m][n] = gnm
-					cd[m][n] = dgnm
-					if m!=0:
-						c[n][m-1]=hnm
-						cd[n][m-1]=dhnm
-
-
-	f.close()
-	
-	#Convert Schmidt normalized gauss Coefficientes to unnormalized
-	snorm[0] = 1.0
-	#for n in range(1,n<=maxord,1):
-	n=1
-	while(n<=maxord):
-		snorm[n] = snorm[n - 1] * (2 * n - 1) / n
-		j = 2
-		#Translate the Java for loop with multiple instance with a while
-		m,D1 = 0,1
-		D2=(n - m + D1) / D1
-		while D2>0:
-			k[m][n] = float(((n - 1) * (n - 1))-(m * m))/float((2 * n-1)*(2*n-3))
-			if m>0:
-				flnmj = ((n - m + 1) * j) / float(n + m)
-				vasoAuxiliar = math.sqrt(flnmj)
-				snorm[n + m * 13] = snorm[n + (m -1 ) * 13] * math.sqrt(flnmj)
-				j=1
-				c[n][m-1] = snorm[n + m * 13] * c[n][m-1]
-				cd[n][m-1] = snorm[n + m * 13] * cd[n][m-1]
-				pass
-			c[m][n] = snorm[n + m * 13] * c[m][n]
-			cd[m][n] = snorm[n + m * 13] * cd[m][n]
-			D2=D2-1
-			m=m+D1
-			pass#End while m
-		fn[n] = (n+1)
-		fm[n] = n
-		#print(snorm[n])
-		n=n+1
-		#End for n
-	k[1][1] = 0.0
-	otime = oalt = olat = olon = -1000.0
-	
-	pass
-
 start()
 
-def calcGeoMag(fLat,fLon,year,altitude):
+def calculate_geomag(fLat,fLon,year,altitude):
 	global re,a2,b2,c2,a4,b4,c4
 	global r,d,ca,sa,ct,st
 
@@ -511,37 +404,37 @@ def calcGeoMag(fLat,fLon,year,altitude):
 	olon = glon
 
 
-def getDeclination(dLat,dLong,year,altitude):
+def get_declination(dLat,dLong,year,altitude):
 	global dec
-	calcGeoMag(dLat,dLong,year,altitude)
+	calculate_geomag(dLat,dLong,year,altitude)
 	return dec
 
 
-def getIntensity(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_intensity(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return ti
 
 
-def getHorizontalIntensity(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_horizontal_intensity(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return bh
 
 
-def getVerticalIntensity(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_vertical_intensity(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return bz
 
 
-def getNorthIntensity(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_north_intensity(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return bx
 
 
-def getEastIntensity(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_east_intensity(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return by
 
 
-def getDipAngle(dLat,dLong,year,altitude):
-	calcGeoMag(dLat,dLong,year,altitude)
+def get_dip_angle(dLat,dLong,year,altitude):
+	calculate_geomag(dLat,dLong,year,altitude)
 	return dip
