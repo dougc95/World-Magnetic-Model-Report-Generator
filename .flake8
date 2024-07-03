@@ -1,0 +1,16 @@
+[flake8]
+max-line-length = 100
+max-complexity = 10
+select = C,E,F,W,B,B950
+ignore = E203,E501,W503,W191,W292
+exclude =
+    .git,
+    __pycache__,
+    *.egg-info,
+    .nox,
+    .pytest_cache,
+    .mypy_cache,
+    .venv,
+    ./src/wmm_v2.py,
+    lint.py,
+    build.py

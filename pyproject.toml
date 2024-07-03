@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "world-magnetic-model-report-generator"
+version = "0.1.0"
+description = "A python approach to the generation of a spreadsheet report of WMM"
+authors = ["Douglas Rojas"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10,<3.13"
+pydantic = "^2.7.4"
+numpy = "^2.0.0"
+openpyxl = "^3.1.5"
+pyqt6 = "6.5.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "7.1.0"
+flake8-bugbear = "24.4.26"
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+run = "main:main"
+build = "build:create_executable"
+lint = "lint:run_linter"
