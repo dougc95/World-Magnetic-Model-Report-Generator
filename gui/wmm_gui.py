@@ -1,6 +1,17 @@
-from datetime import datetime
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                             QLineEdit, QPushButton, QRadioButton, QMessageBox, QDateEdit, QButtonGroup)
+from PyQt6.QtWidgets import (
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QRadioButton,
+    QMessageBox,
+    QDateEdit,
+    QButtonGroup,
+    QApplication
+)
 from PyQt6.QtCore import QDate
 from src.models.wmm_model import WMMModel
 from src.services.wmm_calculator import WMMCalculator
@@ -10,8 +21,16 @@ from src.utils.date_utils import DateUtils
 class WMMGui(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('WMM Excel Generator')
-        self.setGeometry(100, 100, 800, 300)
+        self.setWindowTitle("WMM Excel Generator")
+        screen = QApplication.primaryScreen()
+        screen_size = screen.size()
+        screen_width = screen_size.width()
+        screen_height = screen_size.height()
+        window_width = 800
+        window_height = 300
+        center_x = int((screen_width - window_width) / 2)
+        center_y = int((screen_height) / 2)
+        self.setGeometry(center_x, center_y, window_width, window_height)
         self.init_ui()
 
     def init_ui(self):

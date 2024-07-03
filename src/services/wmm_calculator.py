@@ -1,5 +1,6 @@
-from src.models.wmm_model import WMMModel
+import calendar
 import src.wmm_v2 as WMMv2
+from src.models.wmm_model import WMMModel
 from src.utils.date_utils import DateUtils
 from datetime import datetime, timedelta
 
@@ -18,13 +19,15 @@ class WMMCalculator:
 
     @staticmethod
     def calculate_next_year(model: WMMModel):
-        current_date = datetime.strptime(model.year, '%Y-%m-%d')
-        next_date = current_date + timedelta(days=365)  # This doesn't account for leap years
-        next_year = next_date.strftime('%Y-%m-%d')
-        next_model = WMMModel(latitude=model.latitude,
-                              longitude=model.longitude,
-                              altitude=model.altitude,
-                              year=next_year)
+        current_date = datetime.strptime(model.year, "%Y-%m-%d")
+        next_date = current_date + timedelta( 366 if calendar.isleap(model.year) else 365 )
+        next_year = next_date.strftime("%Y-%m-%d")
+        next_model = WMMModel(
+            latitude=model.latitude,
+            longitude=model.longitude,
+            altitude=model.altitude,
+            year=next_year,
+        )
 
         WMMCalculator.calculate(next_model)
         return next_model
