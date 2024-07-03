@@ -10,13 +10,14 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QDateEdit,
     QButtonGroup,
-    QApplication
+    QApplication,
 )
 from PyQt6.QtCore import QDate
 from src.models.wmm_model import WMMModel
 from src.services.wmm_calculator import WMMCalculator
 from src.services.excel_generator import ExcelGenerator
 from src.utils.date_utils import DateUtils
+
 
 class WMMGui(QMainWindow):
     def __init__(self):
@@ -44,20 +45,20 @@ class WMMGui(QMainWindow):
         self.txt_alt = QLineEdit()
         self.txt_step_days = QLineEdit()
         self.txt_output_file = QLineEdit()
-        
+
         # Calendar
         self.txt_start_date = QDateEdit()
         self.txt_end_date = QDateEdit()
         self.txt_start_date.setDate(QDate.currentDate())
         self.txt_end_date.setDate(QDate.currentDate())
-        
+
         # Buttons
         btn_generate = QPushButton("Generate")
         btn_generate.clicked.connect(self.on_generate)
 
         # Create radio buttons groups
         self.lat_group = QButtonGroup(self)
-        self.lon_group  = QButtonGroup(self)
+        self.lon_group = QButtonGroup(self)
         self.alt_group = QButtonGroup(self)
 
         # Add radio buttons
@@ -128,8 +129,8 @@ class WMMGui(QMainWindow):
             lat = float(self.txt_lat.text())
             lon = float(self.txt_lon.text())
             alt = float(self.txt_alt.text())
-            start_date = self.txt_start_date.date().toString('yyyy-MM-dd')
-            end_date = self.txt_end_date.date().toString('yyyy-MM-dd')
+            start_date = self.txt_start_date.date().toString("yyyy-MM-dd")
+            end_date = self.txt_end_date.date().toString("yyyy-MM-dd")
             step_days = int(self.txt_step_days.text())
             output_file = self.txt_output_file.text()
 
@@ -154,10 +155,7 @@ class WMMGui(QMainWindow):
 
             # Perform calculations and add data to Excel
             for date in dates:
-                model = WMMModel(latitude=lat,
-                                longitude=lon,
-                                altitude=alt,
-                                year=date)
+                model = WMMModel(latitude=lat, longitude=lon, altitude=alt, year=date)
 
                 WMMCalculator.calculate(model)
                 next_model = WMMCalculator.calculate_next_year(model)
@@ -168,6 +166,8 @@ class WMMGui(QMainWindow):
             excel_generator.save()
 
             # Show completion message
-            QMessageBox.information(self, "Complete", "Excel file generated successfully!")
+            QMessageBox.information(
+                self, "Complete", "Excel file generated successfully!"
+            )
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
