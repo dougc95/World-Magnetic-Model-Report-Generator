@@ -8,13 +8,13 @@ class WMMCalculator:
     @staticmethod
     def calculate(model: WMMModel):
         decimal_year = DateUtils.decimal_year(model.year)
-        dec = WMMv2.getDeclination(model.latitude, model.longitude, decimal_year, model.altitude)
-        dip = WMMv2.getDipAngle(model.latitude, model.longitude, decimal_year, model.altitude)
-        ti = WMMv2.getIntensity(model.latitude, model.longitude, decimal_year, model.altitude)
-        bh = WMMv2.getHorizontalIntensity(model.latitude, model.longitude, decimal_year, model.altitude)
-        bx = WMMv2.getNorthIntensity(model.latitude, model.longitude, decimal_year, model.altitude)
-        by = WMMv2.getEastIntensity(model.latitude, model.longitude, decimal_year, model.altitude)
-        bz = WMMv2.getVerticalIntensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        dec = WMMv2.get_declination(model.latitude, model.longitude, decimal_year, model.altitude)
+        dip = WMMv2.get_dip_angle(model.latitude, model.longitude, decimal_year, model.altitude)
+        ti = WMMv2.get_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        bh = WMMv2.get_horizontal_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        bx = WMMv2.get_north_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        by = WMMv2.get_east_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        bz = WMMv2.get_vertical_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
         model.set_results(dec, dip, ti, bh, bx, by, bz)
 
     @staticmethod
