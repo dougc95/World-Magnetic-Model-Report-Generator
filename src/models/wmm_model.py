@@ -32,9 +32,6 @@ class WMMModel(BaseModel):
     by: Optional[float] = Field(None, description="Computed east component of the magnetic field in nanoteslas.")
     bz: Optional[float] = Field(None, description="Computed vertical component of the magnetic field in nanoteslas.")
 
-    class Config:
-        allow_mutation = True
-
     def __str__(self):
         return f"WMMModel(latitude={self.latitude}, longitude={self.longitude}, altitude={self.altitude}, year={self.year})"
 
