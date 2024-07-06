@@ -4,3 +4,4 @@ myenv
 .vscode
 .venv
 poetry.lock
+.ruff*

@@ -1,93 +1,90 @@
-# WMM Report Generator
+# World Magnetic Model Report Generator
 
-WMM Report Generator is a Python-based tool designed to fetch, process, and generate reports based on the World Magnetic Model (WMM).
+A Python-based tool designed to generate spreadsheet reports based on the World Magnetic Model (WMM).
+
+<img src="assets/initial_gui.png" alt="WMM GUI Screenshot" width="600"/>
+
+<img src="assets/results.png" alt="WMM GUI Screenshot" width="600"/>
+
 
 ## Table of Contents
 
+- [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Directory Structure](#directory-structure)
-- [Contributing](#contributing)
+- [Dependencies](#dependencies)
+- [Development](#development)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
+
+## Description
+
+This project provides a graphical user interface for generating reports using the World Magnetic Model. It allows users to input parameters and generate Excel spreadsheets with magnetic field calculations.
 
 ## Installation
 
 1. Clone the repository:
 
-git clone https://github.com/YOUR_USERNAME/WMM_Report_Generator.git
-
+`git clone https://github.com/dougc95/World-Magnetic-Model-Report-Generator.git`
 
 2. Navigate to the project directory:
 
-cd WMM_Report_Generator
+`cd World-Magnetic-Model-Report-Generator`
 
+3. Install dependencies using Poetry:
 
-3. Install the required dependencies:
-
-pip install -r requirements.txt
-
+`poetry install`
 
 ## Usage
 
-Provide a brief overview of how to use the project, for example:
+To run the application:
 
-python src/main.py
+`poetry run python main.py`
 
+This will launch the graphical user interface for the WMM Report Generator.
 
-Detailed usage instructions, command-line options, or GUI instructions (if any) can be provided here.
+Once launched:
+1. Input the required parameters (e.g., date range, coordinates)
+2. Click on the 'Generate Report' button
+3. Choose the name to save the Excel report
 
-## Directory Structure
+## Dependencies
 
-Briefly describe the project's directory structure for clarity:
+- Python 3.10 or higher (but lower than 3.13)
+- PyQt6 (version 6.5.0)
+- pydantic
+- numpy
+- openpyxl
 
+For a complete list of dependencies, refer to the `pyproject.toml` file.
 
-WMM_Report_Generator/
-│
-├── data/
-│ └── WMM.COF
-│
-├── src/
-│ ├── wmm_core/
-│ │ └── model.py
-│ ├── report_generation/
-│ │ ├── report.py
-│ │ └── xlsgen.py
-│ └── main.py
-│
-└── reports/
+## Development
 
+This project uses Poetry for dependency management. To set up the development environment:
 
-## Contributing
+1. Install development dependencies:
 
-Provide instructions on how others can contribute to the project, if you're open to contributions. This can include:
+`poetry install --with dev`
 
-- Submitting bugs and feature requests.
-- Creating pull requests.
-- Updating documentation, etc.
+2. Run linter:
+
+`poetry run lint`
+
+3. Format code:
+
+`poetry run black .`
+
+## Acknowledgments
+
+This project is based on the World Magnetic Model (WMM) developed by the National Centers for Environmental Information (NCEI). The core calculations are derived from the original C code implementation provided by NCEI, which has been adapted and reimplemented in Python for this project.
+
+For more information about the World Magnetic Model, please visit:
+https://www.ncei.noaa.gov/products/world-magnetic-model
+
+We express our gratitude to NCEI for making the WMM code and data publicly available, enabling the development of tools like this one.
 
 ## License
 
-If your project is open source and you have a specific license, mention it here, e.g.,
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-
-## Acknowledgements
-
-Thank any person, organization, or resource you used or got inspired from while developing this project. It could be libraries, data sources, etc.
-
-
-
-
-
-
-
-
-
-
-
-
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 
 
