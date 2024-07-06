@@ -1,4 +1,4 @@
-name: Build Windows Executable
+name: Build Windows Executable and Release
 
 on:
   push:
@@ -27,6 +27,12 @@ jobs:
       run: |
         poetry install
     
+    - name: Get version
+      id: get_version
+      run: |
+        echo "VERSION=$(poetry version -s)" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Build executable
       run: |
         poetry run python build.py
@@ -36,3 +42,24 @@ jobs:
       with:
         name: WMM_Report_Generator
         path: dist/WMM_Report_Generator.exe
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/WMM_Report_Generator.exe
+        asset_name: WMM_Report_Generator.exe
+        asset_content_type: application/octet-stream
