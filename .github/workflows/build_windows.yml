@@ -1,0 +1,38 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+    
+    - name: Install Poetry
+      run: |
+        pip install poetry
+    
+    - name: Install dependencies
+      run: |
+        poetry install
+    
+    - name: Build executable
+      run: |
+        poetry run python build_windows.py 
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: WMM_Report_Generator
+        path: dist/WMM_Report_Generator.exe
