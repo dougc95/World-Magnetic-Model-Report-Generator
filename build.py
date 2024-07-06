@@ -11,10 +11,6 @@ def create_executable():
         '--add-data=data/WMM.COF:data',
         '--add-data=gui:gui',
         '--add-data=src:src',
-        '--hidden-import=PyQt6',
-        '--hidden-import=openpyxl',
-        '--hidden-import=numpy',
-        '--hidden-import=pydantic',
     ])
 
 if __name__ == "__main__":
