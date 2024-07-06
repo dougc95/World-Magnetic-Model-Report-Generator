@@ -9,25 +9,25 @@ class WMMCalculator:
     @staticmethod
     def calculate(model: WMMModel):
         decimal_year = DateUtils.decimal_year(model.year)
-        dec = WMMv2.getDeclination(
+        dec = WMMv2.get_declination(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        dip = WMMv2.getDipAngle(
+        dip = WMMv2.get_dip_angle(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        ti = WMMv2.getIntensity(
+        ti = WMMv2.get_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        bh = WMMv2.getHorizontalIntensity(
+        bh = WMMv2.get_horizontal_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        bx = WMMv2.getNorthIntensity(
+        bx = WMMv2.get_north_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        by = WMMv2.getEastIntensity(
+        by = WMMv2.get_east_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
-        bz = WMMv2.getVerticalIntensity(
+        bz = WMMv2.get_vertical_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
         model.set_results(dec, dip, ti, bh, bx, by, bz)
