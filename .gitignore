@@ -4,3 +4,7 @@ myenv
 .vscode
 .venv
 poetry.lock
+.ruff*
+build
+dist
+WMM_Report_Generator.spec
