@@ -12,7 +12,7 @@ class WMMModel(BaseModel):
         latitude (float): Latitude in decimal degrees.
         longitude (float): Longitude in decimal degrees.
         altitude (float): Altitude above the WGS84 ellipsoid in kilometers.
-        year (string): Year for the desired magnetic field values.
+        date (string): Year for the desired magnetic field values.
         dec (Optional[float]): Computed magnetic declination in degrees. Defaults to None.
         dip (Optional[float]): Computed magnetic inclination in degrees. Defaults to None.
         ti (Optional[float]): Computed total intensity of the magnetic field in nanoteslas. Defaults to None.
@@ -27,7 +27,7 @@ class WMMModel(BaseModel):
     altitude: float = Field(
         ..., description="Altitude above the WGS84 ellipsoid in kilometers."
     )
-    year: str = Field(..., description="Year for the desired magnetic field values.")
+    date: str = Field(..., description="Year for the desired magnetic field values.")
     dec: Optional[float] = Field(
         None, description="Computed magnetic declination in degrees."
     )
@@ -55,7 +55,7 @@ class WMMModel(BaseModel):
     )
 
     def __str__(self):
-        return f"WMMModel(latitude={self.latitude}, longitude={self.longitude}, altitude={self.altitude}, year={self.year})"
+        return f"WMMModel(latitude={self.latitude}, longitude={self.longitude}, altitude={self.altitude}, date={self.date})"
 
     def __repr__(self):
         return self.__str__()

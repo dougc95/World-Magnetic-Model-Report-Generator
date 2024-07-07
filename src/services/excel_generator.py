@@ -35,7 +35,7 @@ class ExcelGenerator:
 
     def add_data(self, model: WMMModel, variation: dict):
         data = [
-            model.year,
+            model.date,
             model.ti,
             model.bh,
             model.bx,
