@@ -1,3 +1,5 @@
+import logging
+import traceback
 from PyQt6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -17,6 +19,9 @@ from src.models.wmm_model import WMMModel
 from src.services.wmm_calculator import WMMCalculator
 from src.services.excel_generator import ExcelGenerator
 from src.utils.date_utils import DateUtils
+
+
+logger = logging.getLogger(__name__)
 
 
 class WMMGui(QMainWindow):
@@ -155,7 +160,7 @@ class WMMGui(QMainWindow):
 
             # Perform calculations and add data to Excel
             for date in dates:
-                model = WMMModel(latitude=lat, longitude=lon, altitude=alt, year=date)
+                model = WMMModel(latitude=lat, longitude=lon, altitude=alt, date=date)
 
                 WMMCalculator.calculate(model)
                 next_model = WMMCalculator.calculate_next_year(model)
@@ -170,4 +175,6 @@ class WMMGui(QMainWindow):
                 self, "Complete", "Excel file generated successfully!"
             )
         except Exception as e:
+            logger.error(f'{e}')
+            logger.error(f'Full traceback:\n{traceback.format_exc()}')
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
