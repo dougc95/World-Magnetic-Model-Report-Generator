@@ -12,10 +12,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
@@ -23,22 +24,22 @@ jobs:
         run: |
           pip install poetry
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           poetry install
 
-      - name: Get version
+      - name: Get Version
         id: get_version
         run: |
           echo "VERSION=$(poetry version -s)" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Build executable
+      - name: Build Executable
         run: |
           poetry run python build.py
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
           name: WMM_Report_Generator
           path: dist/WMM_Report_Generator.exe
