@@ -130,7 +130,7 @@ class WMMGui(QMainWindow):
 
     def on_generate(self):
         try:
-            # Get input values from text fields
+            # Get input values
             lat = float(self.txt_lat.text())
             lon = float(self.txt_lon.text())
             alt = float(self.txt_alt.text())
@@ -147,9 +147,10 @@ class WMMGui(QMainWindow):
             if self.rb_west.isChecked():
                 lon = -lon
 
-            # Adjust altitude based on radio button selection
+            # Adjust altitude if feet is selected
             if self.rb_ft.isChecked():
-                alt = alt * 0.3048780487804878 / 1000  # Convert feet to meters
+                # Convert feet to km (1 ft = 0.3048 m, so divide by 1000 for km)
+                alt = alt * 0.3048 / 1000
 
             # Generate date range
             dates = DateUtils.date_range(start_date, end_date, step_days)
@@ -158,10 +159,20 @@ class WMMGui(QMainWindow):
             excel_generator = ExcelGenerator(output_file)
             excel_generator.generate_header()
 
+            # Add input parameters to a separate sheet
+            excel_generator.add_inputs(
+                lat=lat,
+                lon=lon,
+                alt=alt,
+                start_date=start_date,
+                end_date=end_date,
+                step_days=step_days,
+                output_file=output_file
+            )
+
             # Perform calculations and add data to Excel
             for date in dates:
                 model = WMMModel(latitude=lat, longitude=lon, altitude=alt, date=date)
-
                 WMMCalculator.calculate(model)
                 next_model = WMMCalculator.calculate_next_year(model)
                 variation = WMMCalculator.calculate_variation(model, next_model)
@@ -171,9 +182,7 @@ class WMMGui(QMainWindow):
             excel_generator.save()
 
             # Show completion message
-            QMessageBox.information(
-                self, "Complete", "Excel file generated successfully!"
-            )
+            QMessageBox.information(self, "Complete", "Excel file generated successfully!")
         except Exception as e:
             logger.error(f'{e}')
             logger.error(f'Full traceback:\n{traceback.format_exc()}')
