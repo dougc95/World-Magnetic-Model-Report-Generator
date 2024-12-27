@@ -184,7 +184,7 @@ def start():
     n = 1
     while n <= maxord:
         n = n + 1
-    file_path = os.path.join(os.path.dirname(__file__), "..", "data", "WMM.COF")
+    file_path = os.path.join(os.path.dirname(__file__), "..", '..', "data", "WMM.COF")
 
     f = open(file_path, "r")
     for x in f:
