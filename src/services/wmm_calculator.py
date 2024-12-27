@@ -1,4 +1,4 @@
-import src.wmm_v2 as WMMv2
+import src.wmm.wmm_v2 as WMMv2
 from src.models.wmm_model import WMMModel
 from src.utils.date_utils import DateUtils
 from datetime import datetime, timedelta
