@@ -38,7 +38,7 @@ jobs:
         poetry run python build.py
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: WMM_Report_Generator
         path: dist/WMM_Report_Generator.exe
