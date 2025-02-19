@@ -48,7 +48,7 @@ class WMMGui(QMainWindow):
         self.txt_lat = QLineEdit()
         self.txt_lon = QLineEdit()
         self.txt_alt = QLineEdit()
-        self.txt_step_days = QLineEdit()
+        self.txt_step_days = QLineEdit("1")
         self.txt_output_file = QLineEdit()
 
         # Calendar

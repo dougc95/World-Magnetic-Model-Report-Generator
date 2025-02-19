@@ -4,7 +4,7 @@ from src.models.wmm_model import WMMModel
 
 class ExcelGenerator:
     def __init__(self, file_path: str):
-        self.file_path = file_path
+        self.file_path = file_path + ".xlsx"
         self.workbook = openpyxl.Workbook()
         self.sheet = self.workbook.active
         self.sheet.title = "WMM"
