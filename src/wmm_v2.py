@@ -1,457 +1,292 @@
 import os
-import numpy as np
 import math
+import numpy as np
 
-# Geodetic altitude in km
-alt = 0
-# Geodetic longitud in deg
-glat = 0
-# Geodetic latitude in deg
-glon = 0
-# Time in decimal years
-time = 0
+class WMMv2:
+    _instance = None
 
-# -------------------------------
-# Geomagnetic declination in deg
-# East is + && West is -
-dec = 0
-# Geomagnetic inclination in deg
-# Down is + && Up is -
-dip = 0
-# Total intensity in nanoTesla(nT)
-ti = 0
-# Grid variation referenced to grid North
-# Not calculated
-# gv=0
-# -------------------------------
+    @classmethod
+    def _get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
-# Maximum number of degrees
-maxdeg = 12
-# Maximum order of spherical harmonic model
-maxord = 0
-# Default date
-defaultDate = 2020.0
-# Default altitude
-defaultAltitude = 0
+    def __init__(self):
+        # Model configuration (unchanged from old.py)
+        self.maxdeg = 12
+        self.maxord = self.maxdeg
+        self.defaultDate = 2020.0
 
-# --------------------------------
-# Default coeficients of main magnetic model (nT)
-c = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-# Default coeficients of secular magnetic model (nT/yr)
-cd = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-# The time adjusted geomagnetic gauss coefficients (nt)
-tc = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-# The theta derivative of p(n,m) (unnormalized)
-dp = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-# The Schmidt normalization factors.
-snorm = np.zeros(169)
-# The sine of (m*spherical coord. longitude)
-sp = np.zeros(13)
-# The cosine of (m*spherical coord. longitude).
-cp = np.zeros(13)
-fn = np.zeros(13)
-fm = np.zeros(13)
-# The associated Legendre polynomials for m=1 (unnormalized).
-pp = np.zeros(13)
-k = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-# -----------------------------------
+        # Magnetic field outputs (nT and degrees)
+        self.dec = 0.0   # declination
+        self.dip = 0.0   # dip angle
+        self.ti = 0.0    # total intensity
+        self.bx = 0.0    # north intensity
+        self.by = 0.0    # east intensity
+        self.bz = 0.0    # vertical intensity
+        self.bh = 0.0    # horizontal intensity
 
-# Variables para guardar datos en caso de no existir datos
-otime, oalt, olat, olon = 0, 0, 0, 0
-# Epochs
-epoch = 0
+        # Epoch and caching variables (for geodetic conversion)
+        self.epoch = 0.0
+        self.otime = self.oalt = self.olat = self.olon = -1000.0
 
-# 	  *	 bx is the north south field intensity
-#     *  by is the east west field intensity
-#     *  bz is the vertical field intensity positive downward
-#     *  bh is the horizontal field intensity
-bx, by, bz, bh = 0, 0, 0, 0
+        # WGS-84/IAU constants (unchanged)
+        self.a = 6378.137
+        self.b = 6356.7523142
+        self.re = 6371.2
+        self.a2 = self.a * self.a
+        self.b2 = self.b * self.b
+        self.c2 = self.a2 - self.b2
+        self.a4 = self.a2 * self.a2
+        self.b4 = self.b2 * self.b2
+        self.c4 = self.a4 - self.b4
 
-#     *	re is the Mean radius of IAU-66 ellipsoid, in km.
-#     *  a2 is the Semi-major axis of WGS-84 ellipsoid, in km, squared.
-#     *  b2 is the Semi-minor axis of WGS-84 ellipsoid, in km, squared.
-#     *  c2 is c2 = a2 - b2
-#     *  a4 is a2 squared.
-#     *  b4 is b2 squared.
-#     *  c4 is c4 = a4 - b4
-re, a2, b2, c2, a4, b4, c4 = 0, 0, 0, 0, 0, 0, 0
+        # Allocate arrays as in old.py
+        self.c    = [[0.0 for _ in range(13)] for _ in range(13)]
+        self.cd   = [[0.0 for _ in range(13)] for _ in range(13)]
+        self.tc   = [[0.0 for _ in range(13)] for _ in range(13)]
+        self.dp   = [[0.0 for _ in range(13)] for _ in range(13)]
+        self.snorm = np.zeros(169)  # 13x13 = 169 entries
+        self.sp   = np.zeros(13)
+        self.cp   = np.zeros(13)
+        self.fn   = np.zeros(13)
+        self.fm   = np.zeros(13)
+        self.pp   = np.zeros(13)
+        self.k    = [[0.0 for _ in range(13)] for _ in range(13)]
 
-# It only calculates in one function
-# These only recalculate if the altitude changes
-r, d, ca, sa, ct, st = 0, 0, 0, 0, 0, 0
+        # Variables used in the conversion from geodetic to spherical coordinates
+        self.ct = 0.0
+        self.st = 0.0
+        self.r  = 0.0
+        self.d  = 0.0
+        self.ca = 0.0
+        self.sa = 0.0
 
+        # Load coefficients and perform normalization (unchanged logic)
+        self.start()
 
-def start():
-    global otime, oalt, olat, olon
-    global c, cd, tc, dp, snorm, sp, cp, fn, fm, pp, k
-    global glat
-    global glon
-    global maxord
-    global dec, dip, ti
-    global bx, by, bz, bh
-    maxord = maxdeg
-    sp[0] = 0.0
-    cp[0] = snorm[0] = pp[0] = 1.0
-    dp[0][0] = 0
-    # Semi-major axis of WGS-84 ellipsoid, in km
-    global a
-    a = 6378.137
-    # Semi-minor axis of WGS-84 ellipsoid, in km.
-    global b
-    b = 6356.7523142
-    # Mean radius of IAU-66 ellipsoid, in km.
-    global re, a2, b2, c2, a4, b4, c4
-    global r, d, ca, sa, ct, st
-    re = 6371.2
-    a2 = a * a
-    b2 = b * b
-    c2 = a2 - b2
-    a4 = a2 * a2
-    b4 = b2 * b2
-    c4 = a4 - b4
-    # Lectura Archivo
-    snorm[0] = 1.0
-    n = 1
-    while n <= maxord:
-        n = n + 1
-    file_path = os.path.join(os.path.dirname(__file__), "..", "data", "WMM.COF")
+    def start(self):
+        # Initialization as in old.py
+        self.maxord = self.maxdeg
+        self.sp[0] = 0.0
+        self.cp[0] = self.snorm[0] = self.pp[0] = 1.0
+        self.dp[0][0] = 0.0
 
-    f = open(file_path, "r")
-    for x in f:
-        aux = x.split(" ")
-        i = 0
-        length = len(aux)
-        aux1 = []
-        for y in aux:
-            if y != "":
-                aux1.append(y)
-
-        if len(aux1) == 1:
-            break
-            pass
-        else:
-            if len(aux1) == 3:
-                global epoch
-                epoch = float(aux1[0])
-                defaultDate = epoch + 2.5
-                pass
-            else:
-                n = int(aux1[0])
-                m = int(aux1[1])
-                gnm = float(aux1[2])
-                hnm = float(aux1[3])
-                dgnm = float(aux1[4])
-                dhnm = float(aux1[5])
-
-                if m <= n:
-                    c[m][n] = gnm
-                    cd[m][n] = dgnm
-                    if m != 0:
-                        c[n][m - 1] = hnm
-                        cd[n][m - 1] = dhnm
-
-    f.close()
-
-    # Convert Schmidt normalized gauss Coefficientes to unnormalized
-    snorm[0] = 1.0
-    # for n in range(1,n<=maxord,1):
-    n = 1
-    while n <= maxord:
-        snorm[n] = snorm[n - 1] * (2 * n - 1) / n
-        j = 2
-        # Translate the Java for loop with multiple instance with a while
-        m, D1 = 0, 1
-        D2 = (n - m + D1) / D1
-        while D2 > 0:
-            k[m][n] = float(((n - 1) * (n - 1)) - (m * m)) / float(
-                (2 * n - 1) * (2 * n - 3)
-            )
-            if m > 0:
-                flnmj = ((n - m + 1) * j) / float(n + m)
-                vasoAuxiliar = math.sqrt(flnmj)
-                snorm[n + m * 13] = snorm[n + (m - 1) * 13] * math.sqrt(flnmj)
-                j = 1
-                c[n][m - 1] = snorm[n + m * 13] * c[n][m - 1]
-                cd[n][m - 1] = snorm[n + m * 13] * cd[n][m - 1]
-                pass
-            c[m][n] = snorm[n + m * 13] * c[m][n]
-            cd[m][n] = snorm[n + m * 13] * cd[m][n]
-            D2 = D2 - 1
-            m = m + D1
-            pass  # End while m
-        fn[n] = n + 1
-        fm[n] = n
-        # print(snorm[n])
-        n = n + 1
-        # End for n
-    k[1][1] = 0.0
-    otime = oalt = olat = olon = -1000.0
-
-    pass
-
-
-start()
-
-
-def calculate_geomag(fLat, fLon, year, altitude):
-    global re, a2, b2, c2, a4, b4, c4
-    global r, d, ca, sa, ct, st
-
-    global c, cd, tc, dp, snorm, sp, cp, fn, fm, pp, k
-
-    global dec, dip, ti
-    global bx, by, bz, bh
-    glat = fLat
-    glon = fLon
-    alt = altitude
-    time = year
-    # Calc
-    dt = time - epoch
-    # Ctte
-    pi = math.pi
-    dtr = pi / 180.0
-    rlon = glon * dtr
-    rlat = glat * dtr
-    srlon = math.sin(rlon)
-    srlat = math.sin(rlat)
-    crlon = math.cos(rlon)
-    crlat = math.cos(rlat)
-    srlat2 = srlat * srlat
-    crlat2 = crlat * crlat
-    sp[1] = srlon
-    cp[1] = crlon
-    # Conversion Geodetic Coord TO Spherical Coord
-    global oalt, olat, olon, otime
-    if alt != oalt or glat != olat:
-        q = math.sqrt(a2 - c2 * srlat2)
-        q1 = alt * q
-        q2 = ((q1 + a2) / (q1 + b2)) * ((q1 + a2) / (q1 + b2))
-        ct = srlat / math.sqrt(q2 * crlat2 + srlat2)
-        st = math.sqrt(1.0 - (ct * ct))
-        r2 = (alt * alt) + 2.0 * q1 + (a4 - c4 * srlat2) / (q * q)
-        r = math.sqrt(r2)
-        d = math.sqrt(a2 * crlat2 + b2 * srlat2)
-        ca = (alt + d) / r
-        sa = c2 * crlat * srlat / (r * d)
-        pass
-    if glon != olon:
-        m = 2
-        while m <= maxord:
-            sp[m] = sp[1] * cp[m - 1] + cp[1] * sp[m - 1]
-            cp[m] = cp[1] * cp[m - 1] - sp[1] * sp[m - 1]
-            m = m + 1
-            pass
-        pass
-    aor = re / r
-    ar = aor * aor
-    br = 0
-    bt = 0
-    bp = 0
-    bpp = 0
-    n = 1
-    while n <= maxord:
-        ar = ar * aor
-        m = 0
-        D3 = 1
-        D4 = (n + m + D3) / D3
-        # Translate for (int m = 0,D3 = 1,D4 = (n + m + D3) / D3; D4 > 0; D4--,m += D3) TO while
-        while D4 > 0:
-            # COMPUTE UNNORMALIZED ASSOCIATED LEGENDRE POLYNOMIALS AND DERIVATIVES VIA RECURSION RELATIONS
-            if alt != oalt or glat != olat:
-                if n == m:
-                    snorm[n + m * 13] = st * snorm[n - 1 + (m - 1) * 13]
-                    dp[m][n] = st * dp[m - 1][n - 1] + ct * snorm[n - 1 + (m - 1) * 13]
-                    pass
-                if n == 1 and m == 0:
-                    snorm[n + m * 13] = ct * snorm[n - 1 + m * 13]
-                    dp[m][n] = ct * dp[m][n - 1] - st * snorm[n - 1 + m * 13]
-                    pass
-                if n > 1 and n != m:
-                    if m > n - 2:
-                        snorm[n - 2 + m * 13] = 0.0
-                        dp[m][n - 2] = 0.0
-                        pass
-                    snorm[n + m * 13] = (
-                        ct * snorm[n - 1 + m * 13] - k[m][n] * snorm[n - 2 + m * 13]
-                    )
-                    dp[m][n] = (
-                        ct * dp[m][n - 1]
-                        - st * snorm[n - 1 + m * 13]
-                        - k[m][n] * dp[m][n - 2]
-                    )
-                    pass
-                pass
-            pass
-
-            # TIME ADJUST THE GAUSS COEFFICIENTS
-            if time != otime:
-                tc[m][n] = c[m][n] + dt * cd[m][n]
-                if m != 0:
-                    tc[n][m - 1] = c[n][m - 1] + dt * cd[n][m - 1]
-                    pass
-                pass
-            # ACCUMULATE TERMS OF THE SPHERICAL HARMONIC EXPANSIONS
-            temp1, temp2 = 0, 0
-            par = ar * snorm[n + m * 13]
-
-            if m == 0:
-                temp1 = tc[m][n] * cp[m]
-                temp2 = tc[m][n] * sp[m]
-            else:
-                temp1 = tc[m][n] * cp[m] + tc[n][m - 1] * sp[m]
-                temp2 = tc[m][n] * sp[m] - tc[n][m - 1] * cp[m]
-
-            bt = bt - ar * temp1 * dp[m][n]
-            bp += fm[m] * temp2 * par
-            br += fn[n] * temp1 * par
-
-            # SPECIAL CASE:  NORTH/SOUTH GEOGRAPHIC POLES
-            if st == 0.0 and m == 1:
-                if n == 1:
-                    pp[n] = pp[n - 1]
+        # Read WMM.COF (adjust file_path as needed)
+        file_path = os.path.join(os.path.dirname(__file__), "..", "data", "WMM.COF")
+        with open(file_path, "r") as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) == 1:
+                    break
+                if len(parts) == 3:
+                    self.epoch = float(parts[0])
+                    self.defaultDate = self.epoch + 2.5
                 else:
-                    pp[n] = ct * pp[n - 1] - k[m][n] * pp[n - 2]
-                parp = ar * pp[n]
-                bpp += fm[m] * temp2 * parp
-                pass
-            D4 = D4 - 1
-            m = m + D3
-            # End of for m
-        n = n + 1
-        # End of for n
-    if st == 0.0:
-        bp = bpp
-    else:
-        bp = bp / st  #!!!!WATCH
-        pass
-    pass
+                    n = int(parts[0])
+                    m = int(parts[1])
+                    gnm = float(parts[2])
+                    hnm = float(parts[3])
+                    dgnm = float(parts[4])
+                    dhnm = float(parts[5])
+                    if m <= n:
+                        self.c[m][n] = gnm
+                        self.cd[m][n] = dgnm
+                        if m != 0:
+                            self.c[n][m - 1] = hnm
+                            self.cd[n][m - 1] = dhnm
 
-    """
-	ROTATE MAGNETIC VECTOR COMPONENTS FROM SPHERICAL TO
-	GEODETIC COORDINATES
-	by is the east-west field component
-	bx is the north-south field component
-	bz is the vertical field component.
-	"""
+        # Schmidt normalization factors (unchanged)
+        self.snorm[0] = 1.0
+        n = 1
+        while n <= self.maxord:
+            self.snorm[n] = self.snorm[n - 1] * (2 * n - 1) / n
+            j = 2
+            m = 0
+            D1 = 1
+            D2 = (n - m + D1) / D1
+            while D2 > 0:
+                self.k[m][n] = float(((n - 1)**2 - m**2)) / float((2 * n - 1) * (2 * n - 3))
+                if m > 0:
+                    flnmj = ((n - m + 1) * j) / float(n + m)
+                    self.snorm[n + m * 13] = self.snorm[n + (m - 1) * 13] * math.sqrt(flnmj)
+                    j = 1
+                    self.c[n][m - 1] = self.snorm[n + m * 13] * self.c[n][m - 1]
+                    self.cd[n][m - 1] = self.snorm[n + m * 13] * self.cd[n][m - 1]
+                self.c[m][n] = self.snorm[n + m * 13] * self.c[m][n]
+                self.cd[m][n] = self.snorm[n + m * 13] * self.cd[m][n]
+                D2 = D2 - 1
+                m = m + D1
+            self.fn[n] = n + 1
+            self.fm[n] = n
+            n = n + 1
+        self.k[1][1] = 0.0
+        self.otime = self.oalt = self.olat = self.olon = -1000.0
 
-    bx = -bt * ca - br * sa
-    by = bp
-    bz = bt * sa - br * ca
+    def _calculate_geomag(self, fLat, fLon, year, altitude=0):
+        # This method contains the exact same mathematical logic as old.py
+        self.glat = fLat
+        self.glon = fLon
+        self.alt = altitude
+        self.time = year
 
-    # Critical part
-    bh = math.sqrt((bx * bx) + (by * by))
-    ti = math.sqrt((bh * bh) + (bz * bz))
-    # //	Calculate the declination.
-    dec = math.atan2(by, bx) / dtr
-    dip = math.atan2(bz, bh) / dtr
+        dt = self.time - self.epoch
+        pi = math.pi
+        dtr = pi / 180.0
+        rlon = self.glon * dtr
+        rlat = self.glat * dtr
+        srlon = math.sin(rlon)
+        srlat = math.sin(rlat)
+        crlon = math.cos(rlon)
+        crlat = math.cos(rlat)
+        srlat2 = srlat * srlat
+        crlat2 = crlat * crlat
 
-    otime = time
-    oalt = alt
-    olat = glat
-    olon = glon
+        self.sp[1] = srlon
+        self.cp[1] = crlon
 
+        # Convert geodetic to spherical coordinates (only recalc if lat/alt changed)
+        if altitude != self.oalt or fLat != self.olat:
+            q = math.sqrt(self.a2 - self.c2 * srlat2)
+            q1 = altitude * q
+            q2 = ((q1 + self.a2) / (q1 + self.b2)) ** 2
+            ct = srlat / math.sqrt(q2 * crlat2 + srlat2)
+            st = math.sqrt(1.0 - ct * ct)
+            r2 = altitude * altitude + 2.0 * q1 + (self.a4 - self.c4 * srlat2) / (q * q)
+            r = math.sqrt(r2)
+            d = math.sqrt(self.a2 * crlat2 + self.b2 * srlat2)
+            ca = (altitude + d) / r
+            sa = self.c2 * crlat * srlat / (r * d)
+            self.ct = ct
+            self.st = st
+            self.r  = r
+            self.d  = d
+            self.ca = ca
+            self.sa = sa
+        else:
+            ct = self.ct
+            st = self.st
+            r  = self.r
+            d  = self.d
+            ca = self.ca
+            sa = self.sa
 
-def get_declination(dLat, dLong, year, altitude):
-    global dec
-    calculate_geomag(dLat, dLong, year, altitude)
-    return dec
+        if fLon != self.olon:
+            m = 2
+            while m <= self.maxord:
+                self.sp[m] = self.sp[1] * self.cp[m - 1] + self.cp[1] * self.sp[m - 1]
+                self.cp[m] = self.cp[1] * self.cp[m - 1] - self.sp[1] * self.sp[m - 1]
+                m = m + 1
 
+        aor = self.re / r
+        ar = aor * aor
+        br = 0.0
+        bt = 0.0
+        bp = 0.0
+        bpp = 0.0
 
-def get_intensity(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return ti
+        n = 1
+        while n <= self.maxord:
+            ar = ar * aor
+            m = 0
+            D1 = 1
+            D2 = (n + m + D1) / D1
+            while D2 > 0:
+                if altitude != self.oalt or fLat != self.olat:
+                    if n == m:
+                        self.snorm[n + m * 13] = st * self.snorm[n - 1 + (m - 1) * 13]
+                        self.dp[m][n] = st * self.dp[m - 1][n - 1] + ct * self.snorm[n - 1 + (m - 1) * 13]
+                    if n == 1 and m == 0:
+                        self.snorm[n + m * 13] = ct * self.snorm[n - 1 + m * 13]
+                        self.dp[m][n] = ct * self.dp[m][n - 1] - st * self.snorm[n - 1 + m * 13]
+                    if n > 1 and n != m:
+                        if m > n - 2:
+                            self.snorm[n - 2 + m * 13] = 0.0
+                            self.dp[m][n - 2] = 0.0
+                        self.snorm[n + m * 13] = ct * self.snorm[n - 1 + m * 13] - self.k[m][n] * self.snorm[n - 2 + m * 13]
+                        self.dp[m][n] = ct * self.dp[m][n - 1] - st * self.snorm[n - 1 + m * 13] - self.k[m][n] * self.dp[m][n - 2]
+                self.tc[m][n] = self.c[m][n] + dt * self.cd[m][n]
+                if m != 0:
+                    self.tc[n][m - 1] = self.c[n][m - 1] + dt * self.cd[n][m - 1]
+                par = ar * self.snorm[n + m * 13]
+                if m == 0:
+                    temp1 = self.tc[m][n] * self.cp[m]
+                    temp2 = self.tc[m][n] * self.sp[m]
+                else:
+                    temp1 = self.tc[m][n] * self.cp[m] + self.tc[n][m - 1] * self.sp[m]
+                    temp2 = self.tc[m][n] * self.sp[m] - self.tc[n][m - 1] * self.cp[m]
+                bt = bt - ar * temp1 * self.dp[m][n]
+                bp = bp + self.fm[m] * temp2 * par
+                br = br + self.fn[n] * temp1 * par
+                if st == 0.0 and m == 1:
+                    if n == 1:
+                        self.pp[n] = self.pp[n - 1]
+                    else:
+                        self.pp[n] = ct * self.pp[n - 1] - self.k[m][n] * self.pp[n - 2]
+                    parp = ar * self.pp[n]
+                    bpp = bpp + self.fm[m] * temp2 * parp
+                D2 = D2 - 1
+                m = m + D1
+            n = n + 1
 
+        if st == 0.0:
+            bp = bpp
+        else:
+            bp = bp / st
 
-def get_horizontal_intensity(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return bh
+        self.bx = -bt * ca - br * sa
+        self.by = bp
+        self.bz = bt * sa - br * ca
 
+        self.bh = math.sqrt(self.bx * self.bx + self.by * self.by)
+        self.ti = math.sqrt(self.bh * self.bh + self.bz * self.bz)
 
-def get_vertical_intensity(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return bz
+        self.dec = math.atan2(self.by, self.bx) / dtr
+        self.dip = math.atan2(self.bz, self.bh) / dtr
 
+        self.otime = self.time
+        self.oalt = altitude
+        self.olat = fLat
+        self.olon = fLon
 
-def get_north_intensity(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return bx
+    @classmethod
+    def get_declination(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.dec
 
+    @classmethod
+    def get_dip_angle(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.dip
 
-def get_east_intensity(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return by
+    @classmethod
+    def get_intensity(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.ti
 
+    @classmethod
+    def get_horizontal_intensity(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.bh
 
-def get_dip_angle(dLat, dLong, year, altitude):
-    calculate_geomag(dLat, dLong, year, altitude)
-    return dip
+    @classmethod
+    def get_north_intensity(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.bx
+
+    @classmethod
+    def get_east_intensity(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.by
+
+    @classmethod
+    def get_vertical_intensity(cls, dLat, dLong, year, altitude):
+        inst = cls._get_instance()
+        inst._calculate_geomag(dLat, dLong, year, altitude)
+        return inst.bz
