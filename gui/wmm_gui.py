@@ -133,7 +133,7 @@ class WMMGui(QMainWindow):
             # Get input values from text fields
             lat = float(self.txt_lat.text())
             lon = float(self.txt_lon.text())
-            alt = float(self.txt_alt.text())
+            original_alt = float(self.txt_alt.text())
             start_date = self.txt_start_date.date().toString("yyyy-MM-dd")
             end_date = self.txt_end_date.date().toString("yyyy-MM-dd")
             step_days = int(self.txt_step_days.text())
@@ -147,15 +147,20 @@ class WMMGui(QMainWindow):
             if self.rb_west.isChecked():
                 lon = -lon
 
-            # Adjust altitude based on radio button selection
+            # Determine altitude unit and adjust altitude value if needed.
             if self.rb_ft.isChecked():
-                alt = alt * 0.3048780487804878 / 1000  # Convert feet to meters
+                altitude_unit = "Feet"
+                alt = original_alt * 0.3048780487804878 / 1000  # Convert feet to kilometers
+            else:
+                altitude_unit = "Meters"
+                alt = original_alt  # Assuming user input is already in meters
 
             # Generate date range
             dates = DateUtils.date_range(start_date, end_date, step_days)
 
-            # Create ExcelGenerator instance
+            # Create ExcelGenerator instance and add the inputs sheet with unit info
             excel_generator = ExcelGenerator(output_file)
+            excel_generator.add_inputs_sheet(lat, lon, original_alt, altitude_unit, start_date, end_date, step_days)
             excel_generator.generate_header()
 
             # Perform calculations and add data to Excel
