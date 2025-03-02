@@ -3,6 +3,7 @@ name = "world-magnetic-model-report-generator"
 version = "0.4.2"
 
 
+
 description = "A python approach to the generation of a spreadsheet report of WMM"
 authors = ["Douglas Rojas"]
 license = "MIT"
