@@ -153,7 +153,7 @@ class WMMGui(QMainWindow):
                 alt = original_alt * 0.3048780487804878 / 1000  # Convert feet to kilometers
             else:
                 altitude_unit = "Meters"
-                alt = original_alt  # Assuming user input is already in meters
+                alt = original_alt / 1000  # Assuming user input is already in kilometers
 
             # Generate date range
             dates = DateUtils.date_range(start_date, end_date, step_days)
