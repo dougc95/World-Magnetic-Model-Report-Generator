@@ -6,9 +6,24 @@ class ExcelGenerator:
     def __init__(self, file_path: str):
         self.file_path = file_path + ".xlsx"
         self.workbook = openpyxl.Workbook()
+        # The default active sheet will be used for your data.
         self.sheet = self.workbook.active
         self.sheet.title = "WMM"
         self.row_index = 1
+
+    def add_inputs_sheet(self, lat: float, lon: float, altitude: float, altitude_unit: str, start_date: str, end_date: str, step_days: int):
+        # Create a new worksheet for the input parameters.
+        inputs_sheet = self.workbook.create_sheet("Inputs")
+        # Write headers.
+        inputs_sheet.append(["Parameter", "Value"])
+        # Record the input values.
+        inputs_sheet.append(["Latitude", lat])
+        inputs_sheet.append(["Longitude", lon])
+        inputs_sheet.append(["Altitude", altitude])
+        inputs_sheet.append(["Altitude Unit", altitude_unit])
+        inputs_sheet.append(["Start Date", start_date])
+        inputs_sheet.append(["End Date", end_date])
+        inputs_sheet.append(["Step (days)", step_days])
 
     def generate_header(self):
         headers = [
