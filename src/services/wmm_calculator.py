@@ -1,13 +1,12 @@
-from pywmm import WMMv2
+from pywmm import WMMv2, date_utils
 from src.models.wmm_model import WMMModel
-from src.utils.date_utils import DateUtils
 from datetime import datetime, timedelta
 
 
 class WMMCalculator:
     @staticmethod
     def calculate(model: WMMModel):
-        decimal_year = DateUtils.decimal_year(model.date)
+        decimal_year = date_utils.decimal_year(model.date)
         dec = WMMv2.get_declination(
             model.latitude, model.longitude, decimal_year, model.altitude
         )

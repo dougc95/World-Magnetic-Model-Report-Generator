@@ -18,7 +18,7 @@ from PyQt6.QtCore import QDate
 from src.models.wmm_model import WMMModel
 from src.services.wmm_calculator import WMMCalculator
 from src.services.excel_generator import ExcelGenerator
-from src.utils.date_utils import DateUtils
+from pywmm.date_utils import date_range
 
 
 logger = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ class WMMGui(QMainWindow):
                 alt = original_alt / 1000  # Assuming user input is already in kilometers
 
             # Generate date range
-            dates = DateUtils.date_range(start_date, end_date, step_days)
+            dates = date_range(start_date, end_date, step_days)
 
             # Create ExcelGenerator instance and add the inputs sheet with unit info
             excel_generator = ExcelGenerator(output_file)
