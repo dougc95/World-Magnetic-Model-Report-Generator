@@ -1,4 +1,4 @@
-from src.wmm_v2 import WMMv2
+from pywmm import WMMv2
 from src.models.wmm_model import WMMModel
 from src.utils.date_utils import DateUtils
 from datetime import datetime, timedelta
