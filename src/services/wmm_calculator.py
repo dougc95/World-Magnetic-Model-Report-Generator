@@ -6,7 +6,12 @@ from datetime import datetime, timedelta
 class WMMCalculator:
     @staticmethod
     def calculate(model: WMMModel):
+<<<<<<< Updated upstream
         decimal_year = date_utils.decimal_year(model.date)
+=======
+<<<<<<< Updated upstream
+        decimal_year = DateUtils.decimal_year(model.date)
+>>>>>>> Stashed changes
         dec = WMMv2.get_declination(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
@@ -28,6 +33,17 @@ class WMMCalculator:
         bz = WMMv2.get_vertical_intensity(
             model.latitude, model.longitude, decimal_year, model.altitude
         )
+=======
+        decimal_year = date_utils.decimal_year(model.date)
+        wmm = WMMv2()
+        dec = wmm.get_declination(model.latitude, model.longitude, decimal_year, model.altitude)
+        dip = wmm.get_dip_angle(model.latitude, model.longitude, decimal_year, model.altitude)
+        ti = wmm.get_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        bh = wmm.get_horizontal_intensity(model.atitude, model.longitude, decimal_year, model.altitude)
+        bx = wmm.get_north_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        by = wmm.get_east_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+        bz = wmm.get_vertical_intensity(model.latitude, model.longitude, decimal_year, model.altitude)
+>>>>>>> Stashed changes
         model.set_results(dec, dip, ti, bh, bx, by, bz)
 
     @staticmethod
